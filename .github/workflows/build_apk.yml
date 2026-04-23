@@ -2,15 +2,14 @@ name: Build APK
 
 on:
   push:
-    branches: [ main, master ]
-  workflow_dispatch:  # 允许手动触发
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -27,11 +26,11 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Build APK (split per ABI)
+      - name: Build APK
         run: flutter build apk --split-per-abi
 
       - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: apk-files
+          name: release-apks
           path: build/app/outputs/flutter-apk/*.apk
