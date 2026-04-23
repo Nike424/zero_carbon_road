@@ -26,11 +26,12 @@ android {
         versionName = flutter.versionName
     }
 
-   buildTypes {
-    release {
-        signingConfig = signingConfigs.getByName("debug")
-        isMinifyEnabled = false   // 关闭代码混淆
-        isShrinkResources = false // 关闭资源压缩
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = false
+            isShrinkResources = false
+        }
     }
 }
 
