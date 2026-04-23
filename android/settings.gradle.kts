@@ -22,8 +22,8 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "8.5.2" apply false   // 保持 8.5.2，稳定性优先
-    id("org.jetbrains.kotlin.android") version "2.1.0" apply false
+    id("com.android.application") version "8.9.1" apply false   // 从 8.5.2 升级
+    id("org.jetbrains.kotlin.android") version "2.1.0" apply false  // 从 2.0.21 升级
 }
 
 include(":app")
