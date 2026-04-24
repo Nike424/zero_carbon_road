@@ -7,7 +7,6 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:record/record.dart';
 import 'package:file_picker/file_picker.dart';
 import 'services/ai_chat_service.dart';
 import 'services/step_service.dart';
