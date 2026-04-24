@@ -44,6 +44,9 @@ class UserState {
   static bool todaySigned = false;
   static String lastSignDate = "";
 
+  // 每日答题能量标记
+  static String quizEnergyDate = "";
+
   static List<String> unlockedCountries = ["中国", "越南"];
   static List<String> finishedAchievements = ["起步者", "步行达人"];
   static List<Map<String, dynamic>> carbonRecords = [];
@@ -87,9 +90,8 @@ class UserState {
     ),
   ];
 
-  static Set<String> registeredUsers = {"环保小卫士", "低碳同学A", "环保同学B", "绿色使者"};
+  static Set<String> registeredUsers = {"环保小卫士", "低碳同学A", "环保同学B", "绿色使者", "零碳先锋", "地球卫士", "骑行达人"};
 
-  // 商城 20+ 件商品
   static List<Map<String, dynamic>> mallGoods = [
     {"id": "badge1", "title": "环保先锋徽章", "price": 500, "type": "badge", "bought": false, "imageUrl": "https://cdn-icons-png.flaticon.com/512/2917/2917995.png"},
     {"id": "badge2", "title": "零碳大师徽章", "price": 1000, "type": "badge", "bought": false, "imageUrl": "https://cdn-icons-png.flaticon.com/512/2917/2917632.png"},
@@ -113,7 +115,7 @@ class UserState {
     {"id": "cup2", "title": "咖啡渣杯子", "price": 2200, "type": "goods", "bought": false, "imageUrl": "https://cdn-icons-png.flaticon.com/512/3081/3081895.png"},
   ];
 
-  // 环保知识 30 条
+  // 30 条环保知识
   static List<Map<String, dynamic>> knowledgeList = [
     {"title": "什么是碳足迹？", "content": "碳足迹是指企业机构、活动、产品或个人通过交通运输、食品生产和消费以及各类生产过程等引起的温室气体排放的集合。", "icon": Icons.eco},
     {"title": "为什么要垃圾分类？", "content": "垃圾分类可以减少占地，减少环境污染，变废为宝。每回收1吨废纸可造好纸850公斤，节省木材300公斤。", "icon": Icons.recycling},
@@ -149,18 +151,64 @@ class UserState {
 
   static int knowledgeReadCount = 0;
 
-  // 10 个国家问答
-  static List<Map<String, dynamic>> countryQuizzes = [
-    {"country": "中国", "flag": "🇨🇳", "question": "中国承诺在哪一年实现碳中和？", "options": ["2030", "2040", "2060", "2050"], "answer": 2, "reward": 50},
-    {"country": "美国", "flag": "🇺🇸", "question": "美国重新加入《巴黎协定》是在哪一年？", "options": ["2020", "2021", "2022", "2023"], "answer": 1, "reward": 40},
-    {"country": "德国", "flag": "🇩🇪", "question": "德国计划在哪一年实现碳中和？", "options": ["2040", "2045", "2050", "2055"], "answer": 1, "reward": 45},
-    {"country": "日本", "flag": "🇯🇵", "question": "日本承诺在哪一年实现碳中和？", "options": ["2040", "2050", "2060", "2070"], "answer": 1, "reward": 40},
-    {"country": "印度", "flag": "🇮🇳", "question": "印度承诺在哪一年实现净零排放？", "options": ["2050", "2060", "2070", "2080"], "answer": 2, "reward": 50},
-    {"country": "巴西", "flag": "🇧🇷", "question": "巴西拥有世界上最大的什么生态系统？", "options": ["亚马逊雨林", "撒哈拉沙漠", "喜马拉雅山", "大堡礁"], "answer": 0, "reward": 35},
-    {"country": "法国", "flag": "🇫🇷", "question": "法国哪一年立法了《能源与气候法》？", "options": ["2015", "2019", "2021", "2023"], "answer": 1, "reward": 40},
-    {"country": "英国", "flag": "🇬🇧", "question": "英国哪一年成为第一个立法碳中和的主要经济体？", "options": ["2018", "2019", "2020", "2021"], "answer": 1, "reward": 45},
-    {"country": "瑞典", "flag": "🇸🇪", "question": "瑞典计划在哪一年实现净零排放？", "options": ["2040", "2045", "2050", "2055"], "answer": 1, "reward": 45},
-    {"country": "加拿大", "flag": "🇨🇦", "question": "加拿大哪一年通过了碳中和法案？", "options": ["2020", "2021", "2022", "2023"], "answer": 1, "reward": 40},
+  // 每个国家多个问题（用于刷新）
+  static Map<String, List<Map<String, dynamic>>> countryQuizzes = {
+    "中国": [
+      {"question": "中国承诺在哪一年实现碳中和？", "options": ["2030", "2040", "2060", "2050"], "answer": 2, "reward": 50},
+      {"question": "中国植树节是哪一天？", "options": ["3月12日", "4月22日", "6月5日", "9月10日"], "answer": 0, "reward": 40},
+      {"question": "以下哪个城市是中国首批低碳试点城市？", "options": ["北京", "深圳", "上海", "广州"], "answer": 1, "reward": 45},
+      {"question": "中国最大的沙漠是？", "options": ["塔克拉玛干沙漠", "古尔班通古特沙漠", "巴丹吉林沙漠", "腾格里沙漠"], "answer": 0, "reward": 35},
+    ],
+    "美国": [
+      {"question": "美国重新加入《巴黎协定》是在哪一年？", "options": ["2020", "2021", "2022", "2023"], "answer": 1, "reward": 40},
+      {"question": "美国哪个州的风能发电占比最高？", "options": ["加利福尼亚", "得克萨斯", "爱荷华", "俄克拉荷马"], "answer": 1, "reward": 45},
+      {"question": "美国哪个城市设定了“零排放交通”目标？", "options": ["纽约", "洛杉矶", "芝加哥", "休斯顿"], "answer": 1, "reward": 35},
+    ],
+    "德国": [
+      {"question": "德国计划在哪一年实现碳中和？", "options": ["2040", "2045", "2050", "2055"], "answer": 1, "reward": 45},
+      {"question": "德国最早推广的是什么可再生能源？", "options": ["太阳能", "风能", "生物质能", "水能"], "answer": 1, "reward": 40},
+      {"question": "德国哪个城市被誉为绿色之都？", "options": ["柏林", "汉堡", "慕尼黑", "弗赖堡"], "answer": 3, "reward": 50},
+    ],
+    "日本": [
+      {"question": "日本承诺在哪一年实现碳中和？", "options": ["2040", "2050", "2060", "2070"], "answer": 1, "reward": 40},
+      {"question": "日本哪个城市举行了《京都议定书》的签署？", "options": ["东京", "大阪", "京都", "横滨"], "answer": 2, "reward": 45},
+      {"question": "日本大力发展的海洋能源是？", "options": ["波浪能", "潮汐能", "海流能", "温差能"], "answer": 0, "reward": 35},
+    ],
+    "印度": [
+      {"question": "印度承诺在哪一年实现净零排放？", "options": ["2050", "2060", "2070", "2080"], "answer": 2, "reward": 50},
+      {"question": "印度最大的可再生能源来源是？", "options": ["太阳能", "风能", "水电", "生物质"], "answer": 0, "reward": 45},
+      {"question": "印度哪个城市率先推广电动出租车？", "options": ["新德里", "孟买", "班加罗尔", "海得拉巴"], "answer": 0, "reward": 40},
+    ],
+    "巴西": [
+      {"question": "巴西拥有世界上最大的什么生态系统？", "options": ["亚马逊雨林", "撒哈拉沙漠", "喜马拉雅山", "大堡礁"], "answer": 0, "reward": 35},
+      {"question": "巴西哪种可再生能源占比较高？", "options": ["太阳能", "风能", "水电", "生物质"], "answer": 2, "reward": 40},
+      {"question": "巴西首都是哪座城市？", "options": ["里约热内卢", "圣保罗", "巴西利亚", "萨尔瓦多"], "answer": 2, "reward": 30},
+    ],
+    "法国": [
+      {"question": "法国哪一年立法了《能源与气候法》？", "options": ["2015", "2019", "2021", "2023"], "answer": 1, "reward": 40},
+      {"question": "法国主要依赖哪种核能？", "options": ["裂变", "聚变", "快堆", "高温堆"], "answer": 0, "reward": 45},
+      {"question": "法国哪个城市以自行车交通闻名？", "options": ["巴黎", "里昂", "马赛", "波尔多"], "answer": 1, "reward": 35},
+    ],
+    "英国": [
+      {"question": "英国哪一年成为第一个立法碳中和的主要经济体？", "options": ["2018", "2019", "2020", "2021"], "answer": 1, "reward": 45},
+      {"question": "英国哪个区域有大量海上风电场？", "options": ["北海", "英吉利海峡", "爱尔兰海", "北海峡"], "answer": 0, "reward": 40},
+      {"question": "英国推行的环保税是什么？", "options": ["碳税", "拥堵费", "塑料袋税", "以上都是"], "answer": 3, "reward": 50},
+    ],
+    "瑞典": [
+      {"question": "瑞典计划在哪一年实现净零排放？", "options": ["2040", "2045", "2050", "2055"], "answer": 1, "reward": 45},
+      {"question": "瑞典主要依靠什么供暖？", "options": ["天然气", "石油", "生物质", "地热"], "answer": 2, "reward": 40},
+      {"question": "瑞典哪个城市以可持续发展闻名？", "options": ["斯德哥尔摩", "哥德堡", "马尔默", "乌普萨拉"], "answer": 2, "reward": 35},
+    ],
+    "加拿大": [
+      {"question": "加拿大哪一年通过了碳中和法案？", "options": ["2020", "2021", "2022", "2023"], "answer": 1, "reward": 40},
+      {"question": "加拿大哪种自然资源最为丰富？", "options": ["石油", "天然气", "淡水", "煤炭"], "answer": 2, "reward": 45},
+      {"question": "加拿大哪个省大力推广电动车补贴？", "options": ["安大略", "魁北克", "不列颠哥伦比亚", "阿尔伯塔"], "answer": 2, "reward": 35},
+    ],
+  };
+
+  // 用于首页展示的10个国家顺序
+  static List<String> countryList = [
+    "中国", "美国", "德国", "日本", "印度", "巴西", "法国", "英国", "瑞典", "加拿大"
   ];
 
   static Future<void> saveData() async {
@@ -171,6 +219,7 @@ class UserState {
     prefs.setInt("totalCarbonReduce", totalCarbonReduce);
     prefs.setString("userAvatar", userAvatar);
     prefs.setStringList("friends", friends.map((e) => jsonEncode(e)).toList());
+    prefs.setString("quizEnergyDate", quizEnergyDate);
   }
 
   static Future<void> loadData() async {
@@ -180,10 +229,22 @@ class UserState {
     totalEnergy = prefs.getInt("totalEnergy") ?? 1280;
     totalCarbonReduce = prefs.getInt("totalCarbonReduce") ?? 2800;
     userAvatar = prefs.getString("userAvatar") ?? "";
+    quizEnergyDate = prefs.getString("quizEnergyDate") ?? "";
     final friendList = prefs.getStringList("friends");
     if (friendList != null) {
       friends = friendList.map((e) => jsonDecode(e) as Map<String, dynamic>).toList();
     }
+  }
+
+  // 检查今天是否已获得答题能量
+  static bool canEarnQuizEnergy() {
+    String today = DateTime.now().toString().substring(0, 10);
+    return quizEnergyDate != today;
+  }
+
+  static void markQuizEnergyEarned() {
+    quizEnergyDate = DateTime.now().toString().substring(0, 10);
+    saveData();
   }
 }
 
@@ -235,7 +296,7 @@ class CarbonCarbonAppState extends State<CarbonCarbonApp> {
   }
 }
 
-// ---------- 登录页（略，保持原样）----------
+// ---------- 登录页（保持不变）----------
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
   @override
@@ -314,7 +375,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-// ---------- 主页面 ----------
+// ---------- 主页面（底部导航栏图标颜色改为黑色）----------
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
   @override
@@ -383,7 +444,11 @@ class _MainPageState extends State<MainPage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        selectedItemColor: Colors.green,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Colors.black,   // 选中图标黑色
+        unselectedItemColor: Colors.black45, // 未选中灰色
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
         onTap: (i) => setState(() => _currentIndex = i),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "首页"),
@@ -406,11 +471,10 @@ class _MainPageState extends State<MainPage> {
   );
 }
 
-// ---------- 碳碳聊天对话框（文字、拍照、相册）----------
+// ---------- 碳碳聊天对话框（保持不变，无语音、无文件选择）----------
 class CarbonChatDialog extends StatefulWidget {
   final VoidCallback onClose;
   const CarbonChatDialog({super.key, required this.onClose});
-
   @override
   State<CarbonChatDialog> createState() => _CarbonChatDialogState();
 }
@@ -582,20 +646,12 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
                               ListTile(
                                 leading: const Icon(Icons.photo_library),
                                 title: const Text("相册"),
-                                onTap: () async {
-                                  Navigator.pop(ctx);
-                                  final img = await _imagePicker.pickImage(source: ImageSource.gallery);
-                                  if (img != null) _sendMessage("📷 ${img.path}");
-                                },
+                                onTap: () async { Navigator.pop(ctx); final img = await _imagePicker.pickImage(source: ImageSource.gallery); if (img != null) _sendMessage("📷 ${img.path}"); },
                               ),
                               ListTile(
                                 leading: const Icon(Icons.camera_alt),
                                 title: const Text("拍照"),
-                                onTap: () async {
-                                  Navigator.pop(ctx);
-                                  final img = await _imagePicker.pickImage(source: ImageSource.camera);
-                                  if (img != null) _sendMessage("📸 ${img.path}");
-                                },
+                                onTap: () async { Navigator.pop(ctx); final img = await _imagePicker.pickImage(source: ImageSource.camera); if (img != null) _sendMessage("📸 ${img.path}"); },
                               ),
                             ],
                           ),
@@ -612,23 +668,73 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
     );
   }
 }
-
-// ---------- 首页（30条知识、10国问答）----------
+// ---------- 首页（含每日答题、换题）----------
 class HomePage extends StatefulWidget {
   final StepService stepService;
   const HomePage({super.key, required this.stepService});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   int _selectedCountryIndex = 0;
+  int _currentQuestionIndex = 0;  // 当前显示的题目索引
   int? _quizAnswer;
   bool _quizAnswered = false;
+  bool _earnedEnergyToday = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _earnedEnergyToday = !UserState.canEarnQuizEnergy();
+    _loadRandomQuestion();
+  }
+
+  void _loadRandomQuestion() {
+    final country = UserState.countryList[_selectedCountryIndex];
+    final questions = UserState.countryQuizzes[country];
+    if (questions != null && questions.isNotEmpty) {
+      setState(() {
+        _currentQuestionIndex = Random().nextInt(questions.length);
+        _quizAnswered = false;
+        _quizAnswer = null;
+      });
+    }
+  }
+
+  void _answerQuestion(int selected) {
+    if (_quizAnswered) return;
+    final country = UserState.countryList[_selectedCountryIndex];
+    final quiz = UserState.countryQuizzes[country]![_currentQuestionIndex];
+    setState(() {
+      _quizAnswered = true;
+      _quizAnswer = selected;
+    });
+    if (selected == quiz["answer"]) {
+      if (!_earnedEnergyToday && UserState.canEarnQuizEnergy()) {
+        int reward = quiz["reward"] as int;
+        UserState.totalEnergy += reward;
+        UserState.markQuizEnergyEarned();
+        setState(() {
+          _earnedEnergyToday = true;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("回答正确！获得$reward能量")));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("回答正确！今日答题能量已领取")));
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("回答错误，再试试吧")));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     int unreadCount = UserState.messages.where((e) => !e["read"]).length;
+    final country = UserState.countryList[_selectedCountryIndex];
+    final questions = UserState.countryQuizzes[country];
+    final quiz = (questions != null && questions.isNotEmpty) ? questions[_currentQuestionIndex] : null;
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -691,32 +797,40 @@ class _HomePageState extends State<HomePage> {
         ...UserState.dailyTasks.take(3).map((task) => TaskCard(task: task, onRefresh: () => setState(() {}))),
         TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TaskPage())), child: const Text("查看全部", style: TextStyle(color: Colors.green))),
         const SizedBox(height: 20),
-        // 10 国问答卡片
+        // 答题卡片
         Card(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          elevation: 2,
+          elevation: 3,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("🌍 环球环保知识问答", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("🌍 环球环保问答", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    TextButton.icon(
+                      onPressed: _loadRandomQuestion,
+                      icon: const Icon(Icons.refresh, size: 18),
+                      label: const Text("换一题"),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 8),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                    children: List.generate(UserState.countryQuizzes.length, (index) {
-                      final quiz = UserState.countryQuizzes[index];
+                    children: List.generate(UserState.countryList.length, (index) {
                       return Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: ChoiceChip(
-                          label: Text(quiz["flag"]),
+                          label: Text(UserState.countryList[index].substring(0, 1)),
                           selected: _selectedCountryIndex == index,
                           onSelected: (selected) {
                             setState(() {
                               _selectedCountryIndex = index;
-                              _quizAnswered = false;
-                              _quizAnswer = null;
+                              _loadRandomQuestion();
                             });
                           },
                         ),
@@ -724,30 +838,28 @@ class _HomePageState extends State<HomePage> {
                     }),
                   ),
                 ),
-                const SizedBox(height: 12),
-                Text(UserState.countryQuizzes[_selectedCountryIndex]["question"], style: const TextStyle(fontSize: 16)),
-                const SizedBox(height: 8),
-                ...List.generate(4, (i) {
-                  final quiz = UserState.countryQuizzes[_selectedCountryIndex];
-                  return RadioListTile<int>(
-                    title: Text(quiz["options"][i]),
-                    value: i,
-                    groupValue: _quizAnswer,
-                    onChanged: _quizAnswered ? null : (val) {
-                      setState(() {
-                        _quizAnswered = true;
-                        _quizAnswer = val;
-                        if (val == quiz["answer"]) {
-                          UserState.totalEnergy += quiz["reward"] as int;
-                          UserState.saveData();
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("回答正确！获得${quiz["reward"]}能量")));
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("回答错误，再试试吧")));
-                        }
-                      });
-                    },
-                  );
-                }),
+                if (quiz != null) ...[
+                  const SizedBox(height: 12),
+                  Text(quiz["question"], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                  const SizedBox(height: 8),
+                  ...List.generate(4, (i) {
+                    return InkWell(
+                      onTap: _quizAnswered ? null : () => _answerQuestion(i),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        decoration: BoxDecoration(
+                          color: _quizAnswered
+                              ? (i == quiz["answer"] ? Colors.green.shade50 : (i == _quizAnswer ? Colors.red.shade50 : Colors.grey.shade100))
+                              : Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(quiz["options"][i]),
+                      ),
+                    );
+                  }),
+                ],
               ],
             ),
           ),
@@ -773,34 +885,112 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// ---------- 能量页 ----------
+// ---------- 能量页（高级放大图表）----------
 class EnergyPage extends StatelessWidget {
   const EnergyPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("⚡ 能量中心"), centerTitle: true, backgroundColor: Colors.white, foregroundColor: Colors.green, elevation: 0),
-      body: ListView(padding: const EdgeInsets.all(16), children: [
-        const SizedBox(height: 10),
-        Center(child: Text("${UserState.totalEnergy} ⚡", style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.green))),
-        const SizedBox(height: 20),
-        Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), elevation: 2,
-          child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text("本周碳排放趋势", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 160, child: LineChart(LineChartData(lineBarsData: [LineChartBarData(spots: const [FlSpot(0,3), FlSpot(1,2.5), FlSpot(2,4), FlSpot(3,3.2), FlSpot(4,2.8), FlSpot(5,1.9), FlSpot(6,2.3)], isCurved: true, color: Colors.green, barWidth: 3)]))),
-          ])),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(colors: [Colors.green, Colors.teal]),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Column(
+                children: [
+                  const Text("当前总能量", style: TextStyle(color: Colors.white70, fontSize: 16)),
+                  const SizedBox(height: 8),
+                  Text("${UserState.totalEnergy} ⚡", style: const TextStyle(color: Colors.white, fontSize: 48, fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 30),
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              elevation: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("📈 本周碳排放趋势", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      height: 260,
+                      child: LineChart(
+                        LineChartData(
+                          gridData: FlGridData(
+                            show: true,
+                            drawVerticalLine: false,
+                            horizontalInterval: 1,
+                            getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey.shade200, strokeWidth: 1),
+                          ),
+                          titlesData: FlTitlesData(
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (value, meta) {
+                                  const days = ['一', '二', '三', '四', '五', '六', '日'];
+                                  return Text(days[value.toInt()], style: const TextStyle(fontSize: 12));
+                                },
+                              ),
+                            ),
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                interval: 1,
+                                getTitlesWidget: (value, meta) {
+                                  return Text('${value.toInt()} kg', style: const TextStyle(fontSize: 10));
+                                },
+                              ),
+                            ),
+                            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          ),
+                          borderData: FlBorderData(show: false),
+                          lineBarsData: [
+                            LineChartBarData(
+                              spots: const [
+                                FlSpot(0, 3.2), FlSpot(1, 2.8), FlSpot(2, 4.1),
+                                FlSpot(3, 3.5), FlSpot(4, 2.9), FlSpot(5, 1.8), FlSpot(6, 2.4),
+                              ],
+                              isCurved: true,
+                              color: Colors.green,
+                              barWidth: 4,
+                              dotData: const FlDotData(show: true),
+                              belowBarData: BarAreaData(show: true, color: Colors.green.withOpacity(0.15)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text("单位：kg CO₂", style: TextStyle(color: Colors.grey)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+            const Text("今日能量明细", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            EnergyDetailItem(title: "步行 ${UserState.todayStep} 步", value: "+${(UserState.todayStep ~/ 100).toInt()}", time: "今天"),
+            const EnergyDetailItem(title: "上传减碳行为", value: "+40", time: "12:10"),
+            const EnergyDetailItem(title: "完成每日任务", value: "+20", time: "18:25"),
+          ],
         ),
-        const SizedBox(height: 20),
-        EnergyDetailItem(title: "步行 ${UserState.todayStep} 步", value: "+${(UserState.todayStep ~/ 100).toInt()}", time: "今天"),
-        const EnergyDetailItem(title: "上传减碳行为", value: "+40", time: "12:10"),
-        const EnergyDetailItem(title: "完成每日任务", value: "+20", time: "18:25"),
-      ]),
+      ),
     );
   }
 }
 
-// ---------- 上传页（含校验，保留原样）----------
+// ---------- 上传页（保留原有校验）----------
 class UploadPage extends StatefulWidget {
   const UploadPage({super.key});
   @override
@@ -824,11 +1014,27 @@ class _UploadPageState extends State<UploadPage> {
     {"icon": Icons.volunteer_activism, "title": "植树造林", "energy": 100, "carbon": 1000},
   ];
 
+  Future<void> _pickImages() async {
+    final List<XFile> images = await _picker.pickMultiImage();
+    if (images.isNotEmpty) {
+      setState(() {
+        _selectedImages = images.map((e) => File(e.path)).toList();
+      });
+    }
+  }
+
   void _doUpload() async {
-    if (_descController.text.isEmpty) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("请填写行为描述"))); return; }
+    if (_descController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("请填写行为描述")));
+      return;
+    }
     final typeTitle = types[_selectedType]["title"];
     final validation = UploadValidator.validate(typeTitle, _descController.text);
-    if (!validation.valid) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(validation.message!))); return; }
+    if (!validation.valid) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(validation.message!)));
+      return;
+    }
+
     setState(() {
       UserState.totalEnergy += _getEnergy;
       UserState.totalCarbonReduce += _carbonReduce;
@@ -838,27 +1044,101 @@ class _UploadPageState extends State<UploadPage> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("上传成功！获得 $_getEnergy 能量")));
     _descController.clear();
     _selectedImages.clear();
+    setState(() {
+      _getEnergy = 20;
+      _carbonReduce = 200;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("📤 上传减碳行为"), centerTitle: true),
-      body: SingleChildScrollView(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text("选择行为类型", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        Wrap(spacing: 8, children: List.generate(types.length, (index) => ChoiceChip(label: Text(types[index]["title"]), selected: _selectedType == index, onSelected: (_) => setState(() { _selectedType = index; _getEnergy = types[index]["energy"] as int; _carbonReduce = types[index]["carbon"] as int; })))),
-        const SizedBox(height: 20),
-        TextField(controller: _descController, maxLines: 4, decoration: const InputDecoration(hintText: "请描述你的减碳行为...", border: OutlineInputBorder())),
-        const SizedBox(height: 20),
-        Wrap(spacing: 8, children: [..._selectedImages.map((img) => Image.file(img, width: 80, height: 80, fit: BoxFit.cover)), if (_selectedImages.length < 9) InkWell(onTap: () async { final images = await _picker.pickMultiImage(); if (images != null) setState(() => _selectedImages.addAll(images.map((e) => File(e.path)))); }, child: Container(width: 80, height: 80, decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.add_photo_alternate)))]),
-        const SizedBox(height: 20),
-        SizedBox(width: double.infinity, child: ElevatedButton(onPressed: _doUpload, style: ElevatedButton.styleFrom(backgroundColor: Colors.green, padding: const EdgeInsets.all(16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))), child: const Text("确认上传并领取奖励", style: TextStyle(fontSize: 16, color: Colors.white)))),
-      ])),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("选择行为类型", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Wrap(
+              spacing: 8,
+              children: List.generate(types.length, (index) {
+                return ChoiceChip(
+                  label: Text(types[index]["title"]),
+                  selected: _selectedType == index,
+                  onSelected: (selected) {
+                    setState(() {
+                      _selectedType = index;
+                      _getEnergy = types[index]["energy"] as int;
+                      _carbonReduce = types[index]["carbon"] as int;
+                    });
+                  },
+                );
+              }),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _descController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                hintText: "请详细描述你的减碳行为...",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text("上传图片（最多9张）", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              children: [
+                ..._selectedImages.map((img) => Stack(
+                  children: [
+                    Image.file(img, width: 100, height: 100, fit: BoxFit.cover),
+                    Positioned(
+                      right: 0,
+                      child: IconButton(
+                        icon: const Icon(Icons.close, color: Colors.red),
+                        onPressed: () => setState(() => _selectedImages.remove(img)),
+                      ),
+                    ),
+                  ],
+                )),
+                if (_selectedImages.length < 9)
+                  InkWell(
+                    onTap: _pickImages,
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.add_photo_alternate, size: 40),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _doUpload,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding: const EdgeInsets.all(16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text("确认上传并领取奖励", style: TextStyle(fontSize: 16, color: Colors.white)),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
-// ---------- 好友页 ----------
+// ---------- 好友页（恢复搜索/添加好友）----------
 class FriendPage extends StatefulWidget {
   const FriendPage({super.key});
   @override
@@ -867,59 +1147,212 @@ class FriendPage extends StatefulWidget {
 
 class _FriendPageState extends State<FriendPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  @override
-  void initState() { super.initState(); _tabController = TabController(length: 2, vsync: this); }
-  @override
-  void dispose() { _tabController.dispose(); super.dispose(); }
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>> _searchResults = [];
 
-  Widget _buildMomentCard(Moment moment) {
-    return Card(margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), child: Padding(padding: const EdgeInsets.all(12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [CircleAvatar(backgroundImage: moment.avatar.isNotEmpty ? FileImage(File(moment.avatar)) : null, child: moment.avatar.isEmpty ? const Icon(Icons.person) : null), const SizedBox(width: 10), Text(moment.user, style: const TextStyle(fontWeight: FontWeight.bold)), const Spacer(), Text(moment.time, style: const TextStyle(color: Colors.grey, fontSize: 12))]),
-      if (moment.content.isNotEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(moment.content)),
-      if (moment.images.isNotEmpty) SizedBox(height: 100, child: ListView(scrollDirection: Axis.horizontal, children: moment.images.map((img) => Padding(padding: const EdgeInsets.only(right: 8), child: ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.file(File(img), width: 100, fit: BoxFit.cover)))).toList())),
-      const SizedBox(height: 8),
-      Row(children: [IconButton(icon: Icon(moment.isLiked ? Icons.favorite : Icons.favorite_border, color: moment.isLiked ? Colors.red : null), onPressed: () => setState(() { moment.isLiked = !moment.isLiked; moment.likes += moment.isLiked ? 1 : -1; })), Text("${moment.likes}"), const SizedBox(width: 16), IconButton(icon: const Icon(Icons.comment), onPressed: () {}), Text("${moment.comments.length}")]),
-    ])));
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _searchUsers(String query) {
+    if (query.isEmpty) {
+      setState(() => _searchResults = []);
+      return;
+    }
+    setState(() {
+      _searchResults = UserState.registeredUsers
+          .where((name) => name.toLowerCase().contains(query.toLowerCase()) && name != UserState.userName)
+          .map((name) {
+        return {"name": name, "energy": Random().nextInt(5000) + 1000, "isOnline": Random().nextBool()};
+      }).toList();
+    });
+  }
+
+  void _addFriend(String name) {
+    if (UserState.friends.any((f) => f["name"] == name)) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("$name 已经是好友了")));
+      return;
+    }
+    setState(() {
+      UserState.friends.add({"name": name, "energy": Random().nextInt(5000) + 1000, "isOnline": Random().nextBool(), "avatar": ""});
+    });
+    UserState.saveData();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("已添加 $name 为好友")));
+  }
+
+  Widget _buildMomentsList() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: UserState.moments.length,
+      itemBuilder: (context, index) {
+        final moment = UserState.moments[index];
+        return Card(
+          margin: const EdgeInsets.only(bottom: 16),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: moment.avatar.isNotEmpty ? FileImage(File(moment.avatar)) : null,
+                      child: moment.avatar.isEmpty ? const Icon(Icons.person) : null,
+                    ),
+                    const SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(moment.user, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text(moment.time, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                      ],
+                    ),
+                  ],
+                ),
+                if (moment.content.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Text(moment.content),
+                ],
+                if (moment.images.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 100,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: moment.images.map((img) => Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.file(File(img), width: 100, fit: BoxFit.cover)),
+                      )).toList(),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(moment.isLiked ? Icons.favorite : Icons.favorite_border, color: moment.isLiked ? Colors.red : null),
+                      onPressed: () => setState(() { moment.isLiked = !moment.isLiked; moment.likes += moment.isLiked ? 1 : -1; }),
+                    ),
+                    Text('${moment.likes}'),
+                    const SizedBox(width: 16),
+                    IconButton(icon: const Icon(Icons.comment), onPressed: () {}),
+                    Text('${moment.comments.length}'),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildFriendsList() {
+    return Scaffold(
+      appBar: AppBar(
+        title: TextField(
+          controller: _searchController,
+          decoration: const InputDecoration(
+            hintText: "搜索用户...",
+            border: InputBorder.none,
+          ),
+          onChanged: _searchUsers,
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.clear),
+            onPressed: () {
+              _searchController.clear();
+              _searchUsers('');
+            },
+          ),
+        ],
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: _searchController.text.isEmpty ? UserState.friends.length : _searchResults.length,
+        itemBuilder: (context, index) {
+          if (_searchController.text.isNotEmpty) {
+            final user = _searchResults[index];
+            return ListTile(
+              leading: CircleAvatar(child: Text(user["name"][0])),
+              title: Text(user["name"]),
+              subtitle: Text("能量值: ${user["energy"]}"),
+              trailing: ElevatedButton(
+                onPressed: () => _addFriend(user["name"]),
+                child: const Text("添加"),
+              ),
+            );
+          } else {
+            final friend = UserState.friends[index];
+            return ListTile(
+              leading: CircleAvatar(child: Text(friend["name"][0])),
+              title: Text(friend["name"]),
+              subtitle: Text("能量值: ${friend["energy"]} ⚡"),
+              trailing: IconButton(
+                icon: const Icon(Icons.chat_bubble_outline),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatPage(friendName: friend["name"]))),
+              ),
+            );
+          }
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("好友圈"), centerTitle: true, bottom: TabBar(controller: _tabController, tabs: const [Tab(text: "动态"), Tab(text: "好友")])),
-      body: TabBarView(controller: _tabController, children: [
-        ListView.builder(itemCount: UserState.moments.length, itemBuilder: (_, i) => _buildMomentCard(UserState.moments[i])),
-        ListView.builder(itemCount: UserState.friends.length, itemBuilder: (_, i) {
-          final friend = UserState.friends[i];
-          return ListTile(
-            leading: CircleAvatar(child: Text(friend["name"][0])),
-            title: Text(friend["name"]),
-            subtitle: Text("能量值: ${friend["energy"]}"),
-            trailing: IconButton(
-              icon: const Icon(Icons.chat_bubble_outline),
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatPage(friendName: friend["name"]))),
-            ),
-          );
-        }),
-      ]),
+      appBar: AppBar(
+        title: const Text("好友圈"),
+        centerTitle: true,
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [Tab(text: "动态"), Tab(text: "好友")],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildMomentsList(),
+          _buildFriendsList(),
+        ],
+      ),
     );
   }
 }
 
+// ---------- 聊天页面（与好友私聊）----------
 class ChatPage extends StatefulWidget {
   final String friendName;
   const ChatPage({super.key, required this.friendName});
+
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final List<Map<String, String>> _messages = [{"role": "friend", "content": "你好！今天减碳了吗？", "time": "10:30"}];
+  final List<Map<String, String>> _messages = [
+    {"role": "friend", "content": "你好！今天减碳了吗？", "time": "10:30"}
+  ];
   final TextEditingController _controller = TextEditingController();
 
   void _send() {
     if (_controller.text.trim().isEmpty) return;
     setState(() {
-      _messages.add({"role": "me", "content": _controller.text, "time": "${DateTime.now().hour}:${DateTime.now().minute}"});
+      _messages.add({
+        "role": "me",
+        "content": _controller.text,
+        "time": "${DateTime.now().hour}:${DateTime.now().minute}",
+      });
     });
     _controller.clear();
   }
@@ -928,18 +1361,62 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.friendName)),
-      body: Column(children: [
-        Expanded(child: ListView.builder(padding: const EdgeInsets.all(16), itemCount: _messages.length, itemBuilder: (_, i) {
-          final msg = _messages[i];
-          final isMe = msg["role"] == "me";
-          return Align(alignment: isMe ? Alignment.centerRight : Alignment.centerLeft, child: Container(padding: const EdgeInsets.all(12), margin: const EdgeInsets.symmetric(vertical: 4), decoration: BoxDecoration(color: isMe ? Colors.green.shade100 : Colors.grey.shade200, borderRadius: BorderRadius.circular(12)), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(msg["content"]!), Text(msg["time"]!, style: const TextStyle(fontSize: 10, color: Colors.grey))])));
-        })),
-        Padding(padding: const EdgeInsets.all(8.0), child: Row(children: [Expanded(child: TextField(controller: _controller, decoration: const InputDecoration(hintText: "输入消息", border: OutlineInputBorder()))), IconButton(icon: const Icon(Icons.send, color: Colors.green), onPressed: _send)])),
-      ]),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final msg = _messages[index];
+                final isMe = msg["role"] == "me";
+                return Align(
+                  alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isMe ? Colors.green.shade100 : Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(msg["content"]!),
+                        Text(msg["time"]!, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: const InputDecoration(
+                      hintText: "输入消息",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.send, color: Colors.green),
+                  onPressed: _send,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
-// ---------- 我的页面（能量排行榜，删除精灵）----------
+// ---------- 我的页面（能量排行榜）----------
 class MinePage extends StatefulWidget {
   MinePage({super.key});
   @override
@@ -998,7 +1475,7 @@ class _MinePageState extends State<MinePage> {
   }
 }
 
-// ---------- 商城（20+ 件商品）----------
+// ---------- 商城 ----------
 class MallPage extends StatelessWidget {
   const MallPage({super.key});
   @override
@@ -1044,7 +1521,7 @@ class MallPage extends StatelessWidget {
   }
 }
 
-// ---------- 任务、知识、计算器等（保留原有）----------
+// ---------- 任务 ----------
 class TaskPage extends StatelessWidget {
   const TaskPage({super.key});
   @override
@@ -1080,6 +1557,7 @@ class TaskCard extends StatelessWidget {
   }
 }
 
+// ---------- 环保知识 ----------
 class KnowledgePage extends StatelessWidget {
   const KnowledgePage({super.key});
   @override
@@ -1106,6 +1584,7 @@ class KnowledgePage extends StatelessWidget {
   }
 }
 
+// ---------- 碳足迹计算器 ----------
 class CarbonCalculatorPage extends StatefulWidget {
   const CarbonCalculatorPage({super.key});
   @override
@@ -1133,6 +1612,7 @@ class _CarbonCalculatorPageState extends State<CarbonCalculatorPage> {
   }
 }
 
+// ---------- 消息 ----------
 class MessagePage extends StatelessWidget {
   const MessagePage({super.key});
   @override
@@ -1144,6 +1624,7 @@ class MessagePage extends StatelessWidget {
   }
 }
 
+// ---------- 成就 ----------
 class AchievementPage extends StatelessWidget {
   const AchievementPage({super.key});
   @override
@@ -1158,6 +1639,7 @@ class AchievementPage extends StatelessWidget {
   }
 }
 
+// ---------- 减碳记录 ----------
 class CarbonRecordPage extends StatelessWidget {
   const CarbonRecordPage({super.key});
   @override
@@ -1169,6 +1651,7 @@ class CarbonRecordPage extends StatelessWidget {
   }
 }
 
+// ---------- 能量明细组件 ----------
 class EnergyDetailItem extends StatelessWidget {
   final String title;
   final String value;
