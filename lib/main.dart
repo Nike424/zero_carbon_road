@@ -7,7 +7,6 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:record/record.dart';
 import 'services/ai_chat_service.dart';
 import 'services/step_service.dart';
 import 'services/upload_validator.dart';
@@ -305,7 +304,6 @@ class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
   late final List<Widget> _pages;
   final StepService _stepService = StepService();
-  final AudioRecorder _audioRecorder = AudioRecorder();
   Offset _ballPosition = const Offset(300, 100);
   bool _showChat = false;
 
@@ -337,7 +335,6 @@ class _MainPageState extends State<MainPage> {
   @override
   void dispose() {
     _stepService.dispose();
-    _audioRecorder.dispose();
     super.dispose();
   }
 
@@ -372,7 +369,6 @@ class _MainPageState extends State<MainPage> {
               right: 20,
               child: CarbonChatDialog(
                 onClose: () => setState(() => _showChat = false),
-                audioRecorder: _audioRecorder,
               ),
             ),
         ],
@@ -412,11 +408,10 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-// ---------- 碳碳聊天对话框 (全新设计) ----------
+// ---------- 碳碳聊天对话框 (移除语音，保留拍照/相册/文件) ----------
 class CarbonChatDialog extends StatefulWidget {
   final VoidCallback onClose;
-  final AudioRecorder audioRecorder;
-  const CarbonChatDialog({super.key, required this.onClose, required this.audioRecorder});
+  const CarbonChatDialog({super.key, required this.onClose});
 
   @override
   State<CarbonChatDialog> createState() => _CarbonChatDialogState();
@@ -429,7 +424,6 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
   final AiChatService _aiService = AiChatService();
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
-  bool _isRecording = false;
 
   void _sendMessage(String text) async {
     if (text.trim().isEmpty || _isLoading) return;
@@ -466,21 +460,6 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) _scrollController.animateTo(_scrollController.position.maxScrollExtent, duration: const Duration(milliseconds: 200), curve: Curves.easeOut);
     });
-  }
-
-  Future<void> _startRecording() async {
-    if (await widget.audioRecorder.hasPermission()) {
-      setState(() => _isRecording = true);
-      await widget.audioRecorder.start(const RecordConfig(), path: 'temp_audio.m4a');
-    }
-  }
-
-  Future<void> _stopRecording() async {
-    final path = await widget.audioRecorder.stop();
-    setState(() => _isRecording = false);
-    if (path != null) {
-      _sendMessage("🎤 语音消息");
-    }
   }
 
   Future<void> _pickImage() async {
@@ -592,8 +571,8 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: Icon(_isRecording ? Icons.mic : Icons.mic_none, color: _isRecording ? Colors.red : Colors.grey),
-                    onPressed: _isRecording ? _stopRecording : _startRecording,
+                    icon: const Icon(Icons.mic_none, color: Colors.grey),
+                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("语音功能开发中"))),
                   ),
                   Expanded(
                     child: TextField(
@@ -654,12 +633,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 28,
-                  backgroundImage: (UserState.userAvatar.isNotEmpty && File(UserState.userAvatar).existsSync())
-                      ? FileImage(File(UserState.userAvatar)) as ImageProvider
-                      : const AssetImage('assets/icon/app_icon.png'),
-            ),
+                CircleAvatar(radius: 28, backgroundImage: UserState.userAvatar.isNotEmpty ? FileImage(File(UserState.userAvatar)) : const AssetImage('assets/icon/app_icon.png')),
                 const SizedBox(width: 12),
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text("你好，${UserState.userName}", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -927,7 +901,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
       appBar: AppBar(title: const Text("我的"), centerTitle: true, backgroundColor: Colors.white, foregroundColor: Colors.green, elevation: 0),
       body: ListView(padding: const EdgeInsets.all(16), children: [
         Center(child: Column(children: [
-          CircleAvatar(radius: 50, backgroundImage: UserState.userAvatar.isNotEmpty ? FileImage(File(UserState.userAvatar)) : AssetImage('assets/icon/app_icon.png')),
+          CircleAvatar(radius: 50, backgroundImage: UserState.userAvatar.isNotEmpty ? FileImage(File(UserState.userAvatar)) : const AssetImage('assets/icon/app_icon.png')),
           const SizedBox(height: 12),
           Text(UserState.userName, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           Text(UserState.userSign, style: TextStyle(color: Colors.grey[600])),
@@ -946,7 +920,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                 },
                 child: Transform(
                   alignment: Alignment.center,
-                  transform: Matrix4.rotationY(_spinController.value * 2 * pi),
+                  transform: Matrix4.rotationY(_spinController.value * 2 * 3.1416),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
