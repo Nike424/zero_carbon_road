@@ -25,8 +25,11 @@ jobs:
 
       - name: Get dependencies
         run: |
+          rm -rf /home/runner/.pub-cache/hosted/pub.dev/record_linux-*
+          rm -rf /home/runner/.pub-cache/hosted/pub.dev/record_platform_interface-*
           flutter pub cache clean
           flutter pub get
+          flutter pub upgrade record
           
       - name: Generate launcher icons
         run: flutter pub run flutter_launcher_icons
