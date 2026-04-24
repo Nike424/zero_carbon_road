@@ -25,9 +25,9 @@ jobs:
 
       - name: Get dependencies
         run: |
+          flutter pub cache clean
           flutter pub get
-          flutter pub upgrade
-
+          
       - name: Generate launcher icons
         run: flutter pub run flutter_launcher_icons
 
