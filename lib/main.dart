@@ -408,10 +408,11 @@ class _MainPageState extends State<MainPage> {
   );
 }
 
-// ---------- 聊天对话框（语音、文件选择完整实现）----------
+// ---------- 碳碳聊天对话框 (完整功能) ----------
 class CarbonChatDialog extends StatefulWidget {
   final VoidCallback onClose;
   const CarbonChatDialog({super.key, required this.onClose});
+
   @override
   State<CarbonChatDialog> createState() => _CarbonChatDialogState();
 }
@@ -435,6 +436,7 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
     });
     _controller.clear();
     _scrollToBottom();
+
     final apiMessages = <Map<String, String>>[];
     apiMessages.add({"role": "system", "content": "你是碳碳，一个可爱的环保助手，回答简洁，用emoji。"});
     final start = _messages.length > 11 ? _messages.length - 11 : 0;
@@ -443,6 +445,7 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
         apiMessages.add({"role": _messages[i]["role"]!, "content": _messages[i]["content"]!});
       }
     }
+
     try {
       final stream = _aiService.sendMessage(apiMessages);
       String full = "";
@@ -458,14 +461,20 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) _scrollController.animateTo(_scrollController.position.maxScrollExtent, duration: const Duration(milliseconds: 200), curve: Curves.easeOut);
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      }
     });
   }
 
   Future<void> _startRecording() async {
     if (await _audioRecorder.hasPermission()) {
       setState(() => _isRecording = true);
-      await _audioRecorder.start();
+      await _audioRecorder.start(const RecordConfig());
     }
   }
 
@@ -493,86 +502,147 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
       child: Container(
         width: MediaQuery.of(context).size.width * 0.85,
         height: MediaQuery.of(context).size.height * 0.7,
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+        decoration: BoxDecoration(
+          color: UserState.isDarkMode ? const Color(0xFF2A2A2A) : Colors.white,
+          borderRadius: BorderRadius.circular(24),
+        ),
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
-              decoration: const BoxDecoration(gradient: LinearGradient(colors: [Colors.green, Colors.teal]), borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-              child: Row(children: [
-                const CircleAvatar(backgroundImage: AssetImage('assets/icon/app_icon.png')),
-                const SizedBox(width: 12),
-                const Text('碳碳小助手', style: TextStyle(color: Colors.white, fontSize: 18)),
-                const Spacer(),
-                IconButton(icon: const Icon(Icons.close, color: Colors.white), onPressed: widget.onClose),
-              ]),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(colors: [Colors.green, Colors.teal]),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+              child: Row(
+                children: [
+                  const CircleAvatar(backgroundImage: AssetImage('assets/icon/app_icon.png')),
+                  const SizedBox(width: 12),
+                  const Text('碳碳小助手', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Spacer(),
+                  IconButton(icon: const Icon(Icons.close, color: Colors.white), onPressed: widget.onClose),
+                ],
+              ),
             ),
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
                 padding: const EdgeInsets.all(12),
                 itemCount: _messages.length,
-                itemBuilder: (_, i) {
-                  final msg = _messages[i];
+                itemBuilder: (context, index) {
+                  final msg = _messages[index];
                   final isUser = msg["role"] == "user";
-                  return Align(
-                    alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: isUser ? Colors.green.shade100 : Colors.grey.shade200,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(16), topRight: Radius.circular(16),
-                          bottomLeft: isUser ? Radius.circular(16) : Radius.zero,
-                          bottomRight: isUser ? Radius.zero : Radius.circular(16),
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        if (!isUser) const CircleAvatar(backgroundImage: AssetImage('assets/icon/app_icon.png'), radius: 16),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: isUser ? Colors.green.shade100 : Colors.grey.shade200,
+                              borderRadius: BorderRadius.only(
+                                topLeft: const Radius.circular(16),
+                                topRight: const Radius.circular(16),
+                                bottomLeft: isUser ? const Radius.circular(16) : Radius.zero,
+                                bottomRight: isUser ? Radius.zero : const Radius.circular(16),
+                              ),
+                            ),
+                            child: msg["content"]!.isEmpty
+                                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                                : Text(msg["content"]!, style: const TextStyle(fontSize: 15)),
+                          ),
                         ),
-                      ),
-                      child: msg["content"]!.isEmpty ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator()) : Text(msg["content"]!),
+                      ],
                     ),
                   );
                 },
               ),
             ),
             Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: Colors.grey.shade50, border: Border(top: BorderSide(color: Colors.grey.shade300))),
-              child: Row(children: [
-                IconButton(icon: Icon(_isRecording ? Icons.mic : Icons.mic_none, color: _isRecording ? Colors.red : Colors.grey), onPressed: _isRecording ? _stopRecording : _startRecording),
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    minLines: 1, maxLines: 4,
-                    decoration: InputDecoration(
-                      hintText: '输入消息...',
-                      filled: true, fillColor: Colors.white,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    ),
-                    onSubmitted: (v) => _sendMessage(v),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                border: Border(top: BorderSide(color: Colors.grey.shade300)),
+              ),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(_isRecording ? Icons.mic : Icons.mic_none, color: _isRecording ? Colors.red : Colors.grey),
+                    onPressed: _isRecording ? _stopRecording : _startRecording,
                   ),
-                ),
-                const SizedBox(width: 4),
-                CircleAvatar(backgroundColor: Colors.green, radius: 20, child: IconButton(icon: const Icon(Icons.send, color: Colors.white, size: 18), onPressed: () => _sendMessage(_controller.text))),
-                IconButton(icon: const Icon(Icons.add_circle_outline, color: Colors.green), onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (_) => Wrap(children: [
-                      ListTile(leading: const Icon(Icons.photo_library), title: const Text("相册"), onTap: () async {
-                        Navigator.pop(context);
-                        final img = await _imagePicker.pickImage(source: ImageSource.gallery);
-                        if (img != null) _sendMessage("📷 ${img.path}");
-                      }),
-                      ListTile(leading: const Icon(Icons.camera_alt), title: const Text("拍照"), onTap: () async {
-                        Navigator.pop(context);
-                        final img = await _imagePicker.pickImage(source: ImageSource.camera);
-                        if (img != null) _sendMessage("📸 ${img.path}");
-                      }),
-                      ListTile(leading: const Icon(Icons.insert_drive_file), title: const Text("文件"), onTap: () { Navigator.pop(context); _pickFiles(); }),
-                    ]),
-                  );
-                }),
-              ]),
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      enabled: !_isLoading,
+                      minLines: 1,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        hintText: '输入消息...',
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      ),
+                      onSubmitted: (value) => _sendMessage(value),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  CircleAvatar(
+                    backgroundColor: Colors.green,
+                    radius: 20,
+                    child: IconButton(
+                      icon: Icon(_isLoading ? Icons.hourglass_empty : Icons.send, color: Colors.white, size: 20),
+                      onPressed: _isLoading ? null : () => _sendMessage(_controller.text),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add_circle_outline, color: Colors.green),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+                        builder: (ctx) => SafeArea(
+                          child: Wrap(
+                            children: [
+                              ListTile(
+                                leading: const Icon(Icons.photo_library),
+                                title: const Text("相册"),
+                                onTap: () async {
+                                  Navigator.pop(ctx);
+                                  final img = await _imagePicker.pickImage(source: ImageSource.gallery);
+                                  if (img != null) _sendMessage("📷 ${img.path}");
+                                },
+                              ),
+                              ListTile(
+                                leading: const Icon(Icons.camera_alt),
+                                title: const Text("拍照"),
+                                onTap: () async {
+                                  Navigator.pop(ctx);
+                                  final img = await _imagePicker.pickImage(source: ImageSource.camera);
+                                  if (img != null) _sendMessage("📸 ${img.path}");
+                                },
+                              ),
+                              ListTile(
+                                leading: const Icon(Icons.insert_drive_file),
+                                title: const Text("文件"),
+                                onTap: () {
+                                  Navigator.pop(ctx);
+                                  _pickFiles();
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
         ),
