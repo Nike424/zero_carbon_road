@@ -26,10 +26,6 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Fix record namespace
-        run: |
-          sed -i '/android {/a\    namespace "com.llfbandit.record"' /home/runner/.pub-cache/hosted/pub.dev/record-4.4.4/android/build.gradle
-
       - name: Generate launcher icons
         run: flutter pub run flutter_launcher_icons
 
