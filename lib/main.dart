@@ -471,7 +471,7 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
   Future<void> _startRecording() async {
     if (await widget.audioRecorder.hasPermission()) {
       setState(() => _isRecording = true);
-      await widget.audioRecorder.start();
+      await widget.audioRecorder.start(const RecordConfig(), path: 'temp_audio.m4a');
     }
   }
 
@@ -654,7 +654,12 @@ class _HomePageState extends State<HomePage> {
           children: [
             Row(
               children: [
-                CircleAvatar(radius: 28, backgroundImage: UserState.userAvatar.isNotEmpty ? FileImage(File(UserState.userAvatar)) : AssetImage('assets/icon/app_icon.png')),
+                CircleAvatar(
+                  radius: 28,
+                  backgroundImage: (UserState.userAvatar.isNotEmpty && File(UserState.userAvatar).existsSync())
+                      ? FileImage(File(UserState.userAvatar)) as ImageProvider
+                      : const AssetImage('assets/icon/app_icon.png'),
+            ),
                 const SizedBox(width: 12),
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text("你好，${UserState.userName}", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
