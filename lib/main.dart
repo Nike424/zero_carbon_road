@@ -7,7 +7,6 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:file_picker/file_picker.dart';
 import 'services/ai_chat_service.dart';
 import 'services/step_service.dart';
 import 'services/upload_validator.dart';
@@ -407,7 +406,7 @@ class _MainPageState extends State<MainPage> {
   );
 }
 
-// ---------- 碳碳聊天对话框（无语音，保留文字、图片、文件）----------
+// ---------- 碳碳聊天对话框（文字、拍照、相册）----------
 class CarbonChatDialog extends StatefulWidget {
   final VoidCallback onClose;
   const CarbonChatDialog({super.key, required this.onClose});
@@ -466,15 +465,6 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
         );
       }
     });
-  }
-
-  Future<void> _pickFiles() async {
-    final result = await FilePicker.platform.pickFiles(allowMultiple: true);
-    if (result != null && result.files.isNotEmpty) {
-      for (var file in result.files) {
-        _sendMessage("📎 文件: ${file.name}");
-      }
-    }
   }
 
   @override
@@ -555,7 +545,6 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
               ),
               child: Row(
                 children: [
-                  // 输入框（占满语音按钮的位置）
                   Expanded(
                     child: TextField(
                       controller: _controller,
@@ -608,14 +597,6 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
                                   if (img != null) _sendMessage("📸 ${img.path}");
                                 },
                               ),
-                              ListTile(
-                                leading: const Icon(Icons.insert_drive_file),
-                                title: const Text("文件"),
-                                onTap: () {
-                                  Navigator.pop(ctx);
-                                  _pickFiles();
-                                },
-                              ),
                             ],
                           ),
                         ),
@@ -631,6 +612,7 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
     );
   }
 }
+
 // ---------- 首页（30条知识、10国问答）----------
 class HomePage extends StatefulWidget {
   final StepService stepService;
