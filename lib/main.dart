@@ -654,7 +654,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             Row(
               children: [
-                CircleAvatar(radius: 28, backgroundImage: UserState.userAvatar.isNotEmpty ? FileImage(File(UserState.userAvatar)) : const AssetImage('assets/icon/app_icon.png')),
+                CircleAvatar(radius: 28, backgroundImage: UserState.userAvatar.isNotEmpty ? FileImage(File(UserState.userAvatar)) : AssetImage('assets/icon/app_icon.png')),
                 const SizedBox(width: 12),
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text("你好，${UserState.userName}", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -922,7 +922,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
       appBar: AppBar(title: const Text("我的"), centerTitle: true, backgroundColor: Colors.white, foregroundColor: Colors.green, elevation: 0),
       body: ListView(padding: const EdgeInsets.all(16), children: [
         Center(child: Column(children: [
-          CircleAvatar(radius: 50, backgroundImage: UserState.userAvatar.isNotEmpty ? FileImage(File(UserState.userAvatar)) : const AssetImage('assets/icon/app_icon.png')),
+          CircleAvatar(radius: 50, backgroundImage: UserState.userAvatar.isNotEmpty ? FileImage(File(UserState.userAvatar)) : AssetImage('assets/icon/app_icon.png')),
           const SizedBox(height: 12),
           Text(UserState.userName, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           Text(UserState.userSign, style: TextStyle(color: Colors.grey[600])),
@@ -941,7 +941,7 @@ class _MinePageState extends State<MinePage> with SingleTickerProviderStateMixin
                 },
                 child: Transform(
                   alignment: Alignment.center,
-                  transform: Matrix4.rotationY(_spinController.value * 2 * 3.1416),
+                  transform: Matrix4.rotationY(_spinController.value * 2 * pi),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
