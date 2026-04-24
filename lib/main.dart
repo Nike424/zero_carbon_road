@@ -407,7 +407,7 @@ class _MainPageState extends State<MainPage> {
   );
 }
 
-// ---------- 碳碳聊天对话框 (完整功能) ----------
+// ---------- 碳碳聊天对话框（无语音，保留文字、图片、文件）----------
 class CarbonChatDialog extends StatefulWidget {
   final VoidCallback onClose;
   const CarbonChatDialog({super.key, required this.onClose});
@@ -422,9 +422,7 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
   final ScrollController _scrollController = ScrollController();
   final AiChatService _aiService = AiChatService();
   final ImagePicker _imagePicker = ImagePicker();
-  final AudioRecorder _audioRecorder = AudioRecorder();
   bool _isLoading = false;
-  bool _isRecording = false;
 
   void _sendMessage(String text) async {
     if (text.isEmpty || _isLoading) return;
@@ -468,21 +466,6 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
         );
       }
     });
-  }
-
-  Future<void> _startRecording() async {
-   if (await _audioRecorder.hasPermission()) {
-      final dir = await getApplicationDocumentsDirectory();
-      final path = '${dir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
-      setState(() => _isRecording = true);
-      await _audioRecorder.start(const RecordConfig(), path: path);
-    }
-  }
-
-  Future<void> _stopRecording() async {
-    final path = await _audioRecorder.stop();
-    setState(() => _isRecording = false);
-    if (path != null) _sendMessage("🎤 语音消息已发送");
   }
 
   Future<void> _pickFiles() async {
@@ -572,10 +555,7 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
               ),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: Icon(_isRecording ? Icons.mic : Icons.mic_none, color: _isRecording ? Colors.red : Colors.grey),
-                    onPressed: _isRecording ? _stopRecording : _startRecording,
-                  ),
+                  // 输入框（占满语音按钮的位置）
                   Expanded(
                     child: TextField(
                       controller: _controller,
