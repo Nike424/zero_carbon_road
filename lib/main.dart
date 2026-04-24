@@ -142,7 +142,7 @@ class UserState {
     {"title": "什么是海绵城市？", "content": "海绵城市通过透水铺装、绿色屋顶等措施，让城市像海绵一样吸收、储存、净化雨水。", "icon": Icons.water},
     {"title": "如何减少纸张浪费？", "content": "双面打印，使用电子文档替代纸质文件，废纸回收再利用。", "icon": Icons.print},
     {"title": "雨水收集有何好处？", "content": "收集的雨水可用于浇花、冲厕等，减少对自来水的需求，同时减轻城市排水压力。", "icon": Icons.water_damage},
-    {"title": "什么是生态足迹？", "content": "生态足迹是衡量人类对自然资源消耗和生态系统影响的指标，通常以全球公顷为单位。", "icon": Icons.footprint},
+    {"title": "什么是生态足迹？", "content": "生态足迹是衡量人类对自然资源消耗和生态系统影响的指标，通常以全球公顷为单位。", "icon": Icons.eco},
     {"title": "如何挑选节能家电？", "content": "查看能效标识，选择一级或二级能效产品，长期使用可节省大量电费并降低碳排放。", "icon": Icons.electric_bolt},
     {"title": "什么是绿色建筑？", "content": "绿色建筑在设计和建造中注重节能、节水、节材和室内环境质量，减少对环境的影响。", "icon": Icons.house},
     {"title": "什么是碳捕获？", "content": "碳捕获技术将工业排放中的CO2分离并储存起来，防止其进入大气，是应对气候变化的手段之一。", "icon": Icons.cloud_upload},
@@ -472,9 +472,11 @@ class _CarbonChatDialogState extends State<CarbonChatDialog> {
   }
 
   Future<void> _startRecording() async {
-    if (await _audioRecorder.hasPermission()) {
+   if (await _audioRecorder.hasPermission()) {
+      final dir = await getApplicationDocumentsDirectory();
+      final path = '${dir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
       setState(() => _isRecording = true);
-      await _audioRecorder.start(const RecordConfig());
+      await _audioRecorder.start(const RecordConfig(), path: path);
     }
   }
 
