@@ -272,13 +272,8 @@ void main() async {
   runApp(const CarbonCarbonApp());
 }
 
-class CarbonCarbonApp extends StatefulWidget {
+class CarbonCarbonApp extends StatelessWidget {
   const CarbonCarbonApp({super.key});
-  @override
-  State<CarbonCarbonApp> createState() => CarbonCarbonAppState();
-}
-
-class CarbonCarbonAppState extends State<CarbonCarbonApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -290,8 +285,149 @@ class CarbonCarbonAppState extends State<CarbonCarbonApp> {
         brightness: Brightness.light,
         useMaterial3: true,
       ),
-      home: UserState.isLogin ? const MainPage() : const LoginPage(),
+      home: const SplashPage(),
       debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+// ---------- 精美启动页 ----------
+class SplashPage extends StatefulWidget {
+  const SplashPage({super.key});
+  @override
+  State<SplashPage> createState() => _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
+    );
+    _controller.forward();
+
+    // 2.5秒后跳转
+    Future.delayed(const Duration(milliseconds: 2500), () {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                UserState.isLogin ? const MainPage() : const LoginPage(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            transitionDuration: const Duration(milliseconds: 500),
+          ),
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF1B5E20),
+              Color(0xFF4CAF50),
+              Color(0xFF81C784),
+            ],
+          ),
+        ),
+        child: Center(
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: ScaleTransition(
+              scale: _scaleAnimation,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // 应用图标
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                      image: const DecorationImage(
+                        image: AssetImage('assets/icon/app_icon.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  // 应用名称
+                  const Text(
+                    '碳碳',
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 8,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black26,
+                          blurRadius: 10,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // 副标题
+                  Text(
+                    '开启你的低碳生活',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white.withOpacity(0.9),
+                      letterSpacing: 4,
+                    ),
+                  ),
+                  const SizedBox(height: 60),
+                  // 加载指示器
+                  SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -445,8 +581,8 @@ class _MainPageState extends State<MainPage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,   // 选中图标黑色
-        unselectedItemColor: Colors.black45, // 未选中灰色
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black45,
         showSelectedLabels: true,
         showUnselectedLabels: true,
         onTap: (i) => setState(() => _currentIndex = i),
